@@ -1,2 +1,2 @@
-// Adresse de l'API miPTY (sur le serveur Neuralytic, derrière nginx). À adapter une seule fois.
+// Adresse de l API miPTY (serveur Neuralytic, derriere nginx)
 window.MIPTY_API = "https://vicidial.amgdinc.com/mipty-api";
