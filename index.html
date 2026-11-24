@@ -109,6 +109,36 @@
   dialog form { position: absolute; top: 8px; right: 8px; margin: 0; }
   dialog form button { border: 2px solid var(--ink); background: #fff; border-radius: 50%; width: 36px; height: 36px; font-weight: 800; cursor: pointer; }
 
+
+  /* contacts WhatsApp : bouton flottant + panneau */
+  #waBtn { position: absolute; right: 14px; bottom: 164px; z-index: 5; display: flex; align-items: center; gap: 7px;
+           background: var(--wa, #25d366); color: #0b3d1f; border: 2px solid var(--ink); border-radius: 999px; padding: 9px 15px 9px 12px;
+           font: 800 14px Figtree, sans-serif; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
+  #waBtn svg { width: 20px; height: 20px; }
+  body.chatting #waBtn { bottom: 108px; }
+  body.chatting #chat { padding-bottom: 64px; }
+  #waBtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  #dir { width: min(96vw, 560px); }
+  #dir .head { padding: 16px 56px 8px 16px; }
+  #dir h3 { margin: 0; font: 18px Bungee, sans-serif; }
+  #dir .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  #dir .cats { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; }
+  #dir .cats button { flex: none; border: 2px solid var(--ink); background: #fff; border-radius: 999px; padding: 6px 12px; font: 700 13px Figtree, sans-serif; cursor: pointer; }
+  #dir .cats button.on { background: var(--mango); }
+  #dir .search { margin: 4px 16px 8px; width: calc(100% - 32px); border: 2px solid var(--ink); border-radius: 999px; padding: 8px 14px; font: 15px Figtree, sans-serif; }
+  #dir .list { max-height: 60vh; overflow-y: auto; padding: 0 16px 16px; }
+  .crow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1.5px dashed #cfd8d7; }
+  .crow .ic { font-size: 22px; width: 30px; text-align: center; flex: none; }
+  .crow .tx { flex: 1; min-width: 0; font-size: 14px; line-height: 1.35; }
+  .crow .tx b { display: block; font-size: 15px; }
+  .crow .tx small { color: var(--muted); display: block; }
+  .crow .tag { font-size: 10px; font-weight: 800; border: 1.5px solid var(--ink); border-radius: 6px; padding: 0 4px; background: var(--mango); margin-left: 4px; }
+  .crow a.go { flex: none; width: 44px; height: 44px; border-radius: 50%; background: #25d366; border: 2px solid var(--ink);
+               display: grid; place-items: center; box-shadow: 2px 2px 0 var(--ink); }
+  .crow a.go svg { width: 22px; height: 22px; }
+  .crow a.go:active { transform: translate(2px, 2px); box-shadow: none; }
+  #dir .none { color: var(--muted); font-size: 14px; padding: 14px 0; }
+
   /* suggestions : des autocollants */
   #chips { display: flex; gap: 10px; overflow-x: auto; padding: 4px 14px 12px; flex: none; }
   #chips button { flex: none; border: 2px solid var(--ink); background: #fff; border-radius: 999px; padding: 8px 14px;
@@ -149,7 +179,9 @@
   <button id="send" aria-label="send">➤</button>
 </form>
 <footer id="foot"></footer>
+<button id="waBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0b3d1f" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg><span id="waLab">Contactos</span></button>
 </div>
+<dialog id="dir"><form method="dialog"><button aria-label="close">✕</button></form><div class="head"><h3 id="dirT"></h3><div class="note" id="dirN"></div></div><div class="cats" id="dirC"></div><input class="search" id="dirQ" autocomplete="off"><div class="list" id="dirList"></div></dialog>
 <dialog id="zoom"><form method="dialog"><button aria-label="close">✕</button></form><img id="zimg" alt=""><p id="zcap"></p><a id="zcred" target="_blank" rel="noopener"></a></dialog>
 
 <script>
@@ -222,6 +254,7 @@ function applyLang(l) {   // change l'interface ; le bot répond dans la langue 
   try { localStorage.setItem("mipty_lang", l); } catch (e) {}
   document.querySelectorAll("#langs button").forEach(b => b.classList.toggle("on", b.dataset.l === l));
   $("q").placeholder = T.ph; $("sub").textContent = T.sub;
+  try { ctLabel(); } catch (e) {}
   $("foot").textContent = (HOTEL_INFO && HOTEL_INFO.contact && HOTEL_INFO.contact[l] ? HOTEL_INFO.contact[l] + " · " : "") + T.foot;
   $("chips").innerHTML = "";
   for (const c of T.chips) {
@@ -277,6 +310,55 @@ function photoRow(photos) {
   }
   $("chat").appendChild(r); scrollEnd();
 }
+
+
+// ---------- les contacts WhatsApp : bouton flottant + panneau par rubrique ----------
+const CT = {
+  es: {btn: "Contactos", title: "Reserva por WhatsApp", all: "Todo", search: "Buscar: San Blas, buceo, Boquete…", partner: "Socio", none: "Nada por aquí.",
+       note: "Contactos publicados por los propios operadores. miPTY no cobra ni garantiza el servicio: confirma precio y condiciones con ellos."},
+  en: {btn: "Contacts", title: "Book on WhatsApp", all: "All", search: "Search: San Blas, diving, Boquete…", partner: "Partner", none: "Nothing here.",
+       note: "Contacts published by the operators themselves. miPTY takes no fee and doesn't guarantee the service: confirm price and terms with them."},
+  fr: {btn: "Contacts", title: "Réserver sur WhatsApp", all: "Tout", search: "Chercher : San Blas, plongée, Boquete…", partner: "Partenaire", none: "Rien par ici.",
+       note: "Contacts publiés par les opérateurs eux-mêmes. miPTY ne prend rien et ne garantit pas le service : confirme prix et conditions avec eux."},
+};
+const WA_SVG = document.querySelector("#waBtn svg").outerHTML;
+let DIR = null, dirCat = "";
+function ctT() { return CT[lang] || CT.en; }
+function ctLabel() { $("waLab").textContent = ctT().btn; }
+function dirDraw() {
+  const t = ctT(), q = $("dirQ").value.toLowerCase().trim(), box = $("dirList");
+  const icon = Object.fromEntries((DIR.categories || []).map(c => [c.id, c.icon]));
+  $("dirC").innerHTML = "";
+  for (const c of [{id: "", icon: "", label: t.all}, ...(DIR.categories || [])]) {
+    const b = document.createElement("button"); b.type = "button"; b.className = c.id === dirCat ? "on" : "";
+    b.textContent = (c.icon ? c.icon + " " : "") + c.label; b.onclick = () => { dirCat = c.id; dirDraw(); };
+    $("dirC").appendChild(b);
+  }
+  box.innerHTML = "";
+  for (const c of DIR.contacts || []) {
+    if (dirCat && c.cat !== dirCat) continue;
+    if (q && ![c.title, c.name, c.zone, c.what].join(" ").toLowerCase().includes(q)) continue;
+    const go = `${API}/go/${encodeURIComponent(c.id)}?l=${lang}&f=annuaire&s=${encodeURIComponent(session || "")}`;
+    const r = document.createElement("div"); r.className = "crow";
+    r.innerHTML = `<div class="ic">${esc(icon[c.cat] || "📍")}</div>
+      <div class="tx"><b>${esc(c.title)}${c.partner ? `<span class="tag">${esc(t.partner)}</span>` : ""}</b>
+      <small>${esc(c.name)}${c.zone ? " · " + esc(c.zone) : ""}</small>${c.price ? `<small>💲 ${esc(c.price)}</small>` : ""}${c.hours ? `<small>🕘 ${esc(c.hours)}</small>` : ""}</div>
+      <a class="go" href="${esc(go)}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(c.name)}">${WA_SVG}</a>`;
+    box.appendChild(r);
+  }
+  if (!box.children.length) box.innerHTML = `<div class="none">${esc(t.none)}</div>`;
+}
+$("dirQ").oninput = () => DIR && dirDraw();
+$("waBtn").onclick = async () => {
+  const t = ctT();
+  $("dirT").textContent = t.title; $("dirN").textContent = t.note; $("dirQ").placeholder = t.search;
+  $("dirList").innerHTML = ""; $("dir").showModal();
+  try {
+    DIR = await (await fetch(`${API}/api/annuaire?lang=${lang}`)).json();
+    if (dirCat && !(DIR.categories || []).some(c => c.id === dirCat)) dirCat = "";
+    dirDraw();
+  } catch (e) { $("dirList").innerHTML = `<div class="none">${esc(T.err)}</div>`; }
+};
 
 // ---------- l'attente : le bus et les anecdotes ----------
 let factIdx = Math.floor(Math.random() * 11);
@@ -347,6 +429,7 @@ function step() {
 
 async function start() {
   if (HOTEL) {
+    $("waBtn").style.display = "none";         // la page d'un hôtel : il vend ses propres excursions
     try {
       const h = await (await fetch(API + "/api/hotel/" + encodeURIComponent(HOTEL))).json();
       if (h.name) {
