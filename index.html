@@ -94,6 +94,9 @@
   .fact { font-size: 14px; }
   .fact b { color: var(--ink); }
   .qpos { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .think i { font-style: normal; animation: dot 1.4s infinite; opacity: .2; }
+  .think i:nth-child(2) { animation-delay: .2s; } .think i:nth-child(3) { animation-delay: .4s; }
+  @keyframes dot { 0%, 60%, 100% { opacity: .2; } 30% { opacity: 1; } }
 
   /* photos sous la réponse */
   .pics { align-self: flex-start; display: flex; gap: 10px; overflow-x: auto; max-width: 100%; padding: 2px 2px 6px; }
@@ -156,7 +159,7 @@
   footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 14px 8px; background: #fff; flex: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .av .ring, .road i, .window img.on { animation: none; }
+    .av .ring, .road i, .window img.on, .think i { animation: none; opacity: 1; }
     .window, .window img, .av .pic img { transition: none; }
   }
 </style>
@@ -193,7 +196,7 @@ let lang = ["es", "en", "fr"].includes(L) ? L : "en";
 let T, HOTEL_INFO = null, started = false;
 const ALL = {
   es: {sub: "Tu guía de Panamá, 24 h", ph: "Pregunta lo que quieras…", queue: n => `Hay ${n} pregunta(s) antes de la tuya`,
-       know: "¿Sabías que…", slow: "Busco en mis fichas, puede tardar hasta un minuto.",
+       know: "¿Sabías que…", slow: "Pensando",
        foot: "Asistente automático de Neuralytic. La información es indicativa: confirma precios y horarios con el hotel.",
        hello: "¡Hola! Soy miPTY. Pregúntame sobre transporte, San Blas, Bocas, Boquete, presupuesto o seguridad en Panamá.",
        chips: ["✈️ ¿Cómo llego del aeropuerto?", "🏝️ ¿Cómo ir a San Blas?", "🌙 ¿Es seguro Casco Viejo de noche?"], err: "No pude conectarme. Revisa tu conexión y vuelve a intentarlo.",
@@ -209,7 +212,7 @@ const ALL = {
                "Las molas, de capas de tela recortadas, son el arte de las mujeres guna.",
                "El carnaval dura los cuatro días antes del Miércoles de Ceniza."]},
   en: {sub: "Your Panama guide, 24/7", ph: "Ask me anything…", queue: n => `${n} question(s) ahead of yours`,
-       know: "Did you know…", slow: "I'm checking my notes, this can take up to a minute.",
+       know: "Did you know…", slow: "Thinking",
        foot: "Automated assistant by Neuralytic. Information is indicative: confirm prices and times with the hotel.",
        hello: "Hi! I'm miPTY. Ask me about getting around, San Blas, Bocas, Boquete, budget or safety in Panama.",
        chips: ["✈️ How do I get from the airport?", "🏝️ How to get to San Blas?", "🌙 Is Casco Viejo safe at night?"], err: "I couldn't connect. Check your connection and try again.",
@@ -225,7 +228,7 @@ const ALL = {
                "Molas, made of layered cut-out fabric, are the art of Guna women.",
                "Carnival runs for the four days before Ash Wednesday."]},
   fr: {sub: "Ton guide du Panama, 24 h/24", ph: "Pose ta question…", queue: n => `${n} question(s) avant la tienne`,
-       know: "Le savais-tu ?", slow: "Je cherche dans mes fiches, ça peut prendre jusqu'à une minute.",
+       know: "Le savais-tu ?", slow: "Je réfléchis",
        foot: "Assistant automatique de Neuralytic. Informations indicatives : confirme prix et horaires avec l'hôtel.",
        hello: "Salut ! Je suis miPTY. Pose-moi tes questions sur les transports, les San Blas, Bocas, Boquete, le budget ou la sécurité au Panama.",
        chips: ["✈️ Comment venir de l'aéroport ?", "🏝️ Comment aller aux San Blas ?", "🌙 Casco Viejo, c'est sûr le soir ?"], err: "Connexion impossible. Vérifie ta connexion et réessaie.",
@@ -365,7 +368,7 @@ let factIdx = Math.floor(Math.random() * 11);
 function waitHTML(extra) {
   const f = T.facts[factIdx % T.facts.length];
   return `<div class="road"><i>🚌</i></div><div class="fact"><b>${esc(T.know)}</b> ${esc(f)}</div>` +
-         `<div class="qpos">${esc(extra || T.slow)}</div>`;
+         (extra ? `<div class="qpos">${esc(extra)}</div>` : `<div class="qpos think">${esc(T.slow)}<i>.</i><i>.</i><i>.</i></div>`);
 }
 
 async function ask(text) {
@@ -374,7 +377,7 @@ async function ask(text) {
   $("chips").style.display = "none"; $("q").value = ""; $("send").disabled = true;
   bubble("u", esc(text));
   const w = bubble("b wait", waitHTML());
-  const factTimer = setInterval(() => { factIdx++; const q = w.querySelector(".qpos"); w.innerHTML = waitHTML(q && q.textContent); }, 9000);
+  const factTimer = setInterval(() => { factIdx++; const q = w.querySelector(".qpos:not(.think)"); w.innerHTML = waitHTML(q && q.textContent); }, 9000);
   try {
     const r = await fetch(API + "/api/ask", {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({question: text, session, hotel: HOTEL, lang})});
