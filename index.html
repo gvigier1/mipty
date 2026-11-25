@@ -94,9 +94,6 @@
   .fact { font-size: 14px; }
   .fact b { color: var(--ink); }
   .qpos { font-size: 13px; font-weight: 600; margin-top: 4px; }
-  .think i { font-style: normal; animation: dot 1.4s infinite; opacity: .2; }
-  .think i:nth-child(2) { animation-delay: .2s; } .think i:nth-child(3) { animation-delay: .4s; }
-  @keyframes dot { 0%, 60%, 100% { opacity: .2; } 30% { opacity: 1; } }
 
   /* photos sous la réponse */
   .pics { align-self: flex-start; display: flex; gap: 10px; overflow-x: auto; max-width: 100%; padding: 2px 2px 6px; }
@@ -141,6 +138,29 @@
   .crow a.go svg { width: 22px; height: 22px; }
   .crow a.go:active { transform: translate(2px, 2px); box-shadow: none; }
   #dir .none { color: var(--muted); font-size: 14px; padding: 14px 0; }
+  .crow a.go.web, .crow a.go.map { background: #fff; font-size: 20px; text-decoration: none; }
+  /* sous une recommandation : un bouton par adresse ; sous une réponse : un lien vers les contacts du sujet */
+  .recos { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 6px; max-width: 92%; }
+  .recos a, .recos button { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--ink); border-radius: 999px;
+    padding: 6px 12px; background: #fff; color: var(--ink); font: 700 13px Figtree, sans-serif; text-decoration: none; cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink); }
+  .recos a.wa { background: #25d366; }
+  /* proposer une adresse : sous la liste du répertoire */
+  [hidden] { display: none !important; }
+  #dir .propose { padding: 0 16px 16px; }
+  #propBtn { width: 100%; border: 2px dashed var(--ink); background: #fff; border-radius: 12px; padding: 10px; font: 700 14px Figtree, sans-serif; cursor: pointer; }
+  #propBox { padding: 0 16px 16px; max-height: 64vh; overflow-y: auto; }
+  #propBox label { display: block; font-size: 13px; font-weight: 700; margin-top: 10px; }
+  #propBox input, #propBox select { width: 100%; margin-top: 4px; border: 2px solid var(--ink); border-radius: 10px; padding: 8px 10px; font: 15px Figtree, sans-serif; background: #fff; }
+  #propBox .who { display: flex; gap: 8px; margin-top: 6px; }
+  #propBox .who label { flex: 1; margin: 0; border: 2px solid var(--ink); border-radius: 10px; padding: 8px; font-weight: 600; cursor: pointer; }
+  #propBox .who input { width: auto; margin: 0 6px 0 0; }
+  #propBox .hp { position: absolute; left: -9999px; }
+  #propBox .small { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  #propBox .send { width: 100%; margin-top: 12px; border: 2px solid var(--ink); background: var(--mango); border-radius: 12px; padding: 10px; font: 800 15px Figtree, sans-serif; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
+  #propBox .msg { margin-top: 10px; font-weight: 700; }
+  .recos a svg { width: 16px; height: 16px; }
+  .recos a:active, .recos button:active { transform: translate(2px, 2px); box-shadow: none; }
 
   /* suggestions : des autocollants */
   #chips { display: flex; gap: 10px; overflow-x: auto; padding: 4px 14px 12px; flex: none; }
@@ -159,7 +179,7 @@
   footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 14px 8px; background: #fff; flex: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .av .ring, .road i, .window img.on, .think i { animation: none; opacity: 1; }
+    .av .ring, .road i, .window img.on { animation: none; }
     .window, .window img, .av .pic img { transition: none; }
   }
 </style>
@@ -184,7 +204,7 @@
 <footer id="foot"></footer>
 <button id="waBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0b3d1f" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg><span id="waLab">Contactos</span></button>
 </div>
-<dialog id="dir"><form method="dialog"><button aria-label="close">✕</button></form><div class="head"><h3 id="dirT"></h3><div class="note" id="dirN"></div></div><div class="cats" id="dirC"></div><input class="search" id="dirQ" autocomplete="off"><div class="list" id="dirList"></div></dialog>
+<dialog id="dir"><form method="dialog"><button aria-label="close">✕</button></form><div class="head"><h3 id="dirT"></h3><div class="note" id="dirN"></div></div><div class="cats" id="dirC"></div><input class="search" id="dirQ" autocomplete="off"><div class="list" id="dirList"></div><div class="propose"><button type="button" id="propBtn"></button></div><div id="propBox" hidden></div></dialog>
 <dialog id="zoom"><form method="dialog"><button aria-label="close">✕</button></form><img id="zimg" alt=""><p id="zcap"></p><a id="zcred" target="_blank" rel="noopener"></a></dialog>
 
 <script>
@@ -196,7 +216,7 @@ let lang = ["es", "en", "fr"].includes(L) ? L : "en";
 let T, HOTEL_INFO = null, started = false;
 const ALL = {
   es: {sub: "Tu guía de Panamá, 24 h", ph: "Pregunta lo que quieras…", queue: n => `Hay ${n} pregunta(s) antes de la tuya`,
-       know: "¿Sabías que…", slow: "Pensando",
+       know: "¿Sabías que…", slow: "Busco en mis fichas, puede tardar hasta un minuto.",
        foot: "Asistente automático de Neuralytic. La información es indicativa: confirma precios y horarios con el hotel.",
        hello: "¡Hola! Soy miPTY. Pregúntame sobre transporte, San Blas, Bocas, Boquete, presupuesto o seguridad en Panamá.",
        chips: ["✈️ ¿Cómo llego del aeropuerto?", "🏝️ ¿Cómo ir a San Blas?", "🌙 ¿Es seguro Casco Viejo de noche?"], err: "No pude conectarme. Revisa tu conexión y vuelve a intentarlo.",
@@ -212,7 +232,7 @@ const ALL = {
                "Las molas, de capas de tela recortadas, son el arte de las mujeres guna.",
                "El carnaval dura los cuatro días antes del Miércoles de Ceniza."]},
   en: {sub: "Your Panama guide, 24/7", ph: "Ask me anything…", queue: n => `${n} question(s) ahead of yours`,
-       know: "Did you know…", slow: "Thinking",
+       know: "Did you know…", slow: "I'm checking my notes, this can take up to a minute.",
        foot: "Automated assistant by Neuralytic. Information is indicative: confirm prices and times with the hotel.",
        hello: "Hi! I'm miPTY. Ask me about getting around, San Blas, Bocas, Boquete, budget or safety in Panama.",
        chips: ["✈️ How do I get from the airport?", "🏝️ How to get to San Blas?", "🌙 Is Casco Viejo safe at night?"], err: "I couldn't connect. Check your connection and try again.",
@@ -228,7 +248,7 @@ const ALL = {
                "Molas, made of layered cut-out fabric, are the art of Guna women.",
                "Carnival runs for the four days before Ash Wednesday."]},
   fr: {sub: "Ton guide du Panama, 24 h/24", ph: "Pose ta question…", queue: n => `${n} question(s) avant la tienne`,
-       know: "Le savais-tu ?", slow: "Je réfléchis",
+       know: "Le savais-tu ?", slow: "Je cherche dans mes fiches, ça peut prendre jusqu'à une minute.",
        foot: "Assistant automatique de Neuralytic. Informations indicatives : confirme prix et horaires avec l'hôtel.",
        hello: "Salut ! Je suis miPTY. Pose-moi tes questions sur les transports, les San Blas, Bocas, Boquete, le budget ou la sécurité au Panama.",
        chips: ["✈️ Comment venir de l'aéroport ?", "🏝️ Comment aller aux San Blas ?", "🌙 Casco Viejo, c'est sûr le soir ?"], err: "Connexion impossible. Vérifie ta connexion et réessaie.",
@@ -317,12 +337,65 @@ function photoRow(photos) {
 
 // ---------- les contacts WhatsApp : bouton flottant + panneau par rubrique ----------
 const CT = {
-  es: {btn: "Contactos", title: "Reserva por WhatsApp", all: "Todo", search: "Buscar: San Blas, buceo, Boquete…", partner: "Socio", none: "Nada por aquí.",
-       note: "Contactos publicados por los propios operadores. miPTY no cobra ni garantiza el servicio: confirma precio y condiciones con ellos."},
-  en: {btn: "Contacts", title: "Book on WhatsApp", all: "All", search: "Search: San Blas, diving, Boquete…", partner: "Partner", none: "Nothing here.",
-       note: "Contacts published by the operators themselves. miPTY takes no fee and doesn't guarantee the service: confirm price and terms with them."},
-  fr: {btn: "Contacts", title: "Réserver sur WhatsApp", all: "Tout", search: "Chercher : San Blas, plongée, Boquete…", partner: "Partenaire", none: "Rien par ici.",
-       note: "Contacts publiés par les opérateurs eux-mêmes. miPTY ne prend rien et ne garantit pas le service : confirme prix et conditions avec eux."},
+  es: {btn: "Contactos", more: "Ver contactos", title: "Reserva y contactos", all: "Todo", search: "Buscar: San Blas, buceo, Boquete…", partner: "Socio", none: "Nada por aquí.",
+       note: "Números publicados por los propios negocios (sin WhatsApp, el botón abre su web o el mapa). miPTY no cobra ni garantiza el servicio: confirma precio y condiciones con ellos."},
+  en: {btn: "Contacts", more: "See contacts", title: "Book & contacts", all: "All", search: "Search: San Blas, diving, Boquete…", partner: "Partner", none: "Nothing here.",
+       note: "Numbers published by the businesses themselves (no WhatsApp: the button opens their website or the map). miPTY takes no fee and doesn't guarantee the service: confirm price and terms with them."},
+  fr: {btn: "Contacts", more: "Voir les contacts", title: "Réserver et contacter", all: "Tout", search: "Chercher : San Blas, plongée, Boquete…", partner: "Partenaire", none: "Rien par ici.",
+       note: "Numéros publiés par les établissements eux-mêmes (sans WhatsApp, le bouton ouvre leur site ou la carte). miPTY ne prend rien et ne garantit pas le service : confirme prix et conditions avec eux."},
+};
+const PR = {
+  es: {btn: "➕ ¿Falta un lugar? Propónlo", title: "Proponer un lugar", who: "Soy…", owner: "el dueño", client: "un cliente",
+       cat: "Tipo", nom: "Nombre del negocio", zone: "Zona", zph: "Boquete, Casco Viejo…", que: "¿Qué ofrece?", qph: "Tour de café, hostal con piscina…",
+       wa: "WhatsApp del negocio (si lo sabes)", site: "Web o Instagram (opcional)", me: "Tu contacto (opcional, solo para verificar; no se publica)",
+       send: "Enviar", note: "Lo revisamos antes de publicarlo. Si eres el dueño, te escribiremos para confirmar.",
+       ok: "¡Gracias! Lo revisaremos pronto.", back: "← Volver a la lista"},
+  en: {btn: "➕ Missing a place? Suggest it", title: "Suggest a place", who: "I'm…", owner: "the owner", client: "a customer",
+       cat: "Type", nom: "Business name", zone: "Area", zph: "Boquete, Casco Viejo…", que: "What do they offer?", qph: "Coffee tour, hostel with a pool…",
+       wa: "Business WhatsApp (if you know it)", site: "Website or Instagram (optional)", me: "Your contact (optional, only to check; never published)",
+       send: "Send", note: "We review it before publishing. If you're the owner, we'll message you to confirm.",
+       ok: "Thanks! We'll review it soon.", back: "← Back to the list"},
+  fr: {btn: "➕ Il manque une adresse ? Propose-la", title: "Proposer une adresse", who: "Je suis…", owner: "le propriétaire", client: "un client",
+       cat: "Type", nom: "Nom de l'établissement", zone: "Zone", zph: "Boquete, Casco Viejo…", que: "Que propose-t-il ?", qph: "Tour du café, auberge avec piscine…",
+       wa: "WhatsApp de l'établissement (si tu le connais)", site: "Site ou Instagram (facultatif)", me: "Ton contact (facultatif, seulement pour vérifier ; jamais publié)",
+       send: "Envoyer", note: "On vérifie avant de publier. Si tu es le propriétaire, on t'écrira pour confirmer.",
+       ok: "Merci ! On regarde ça bientôt.", back: "← Retour à la liste"},
+};
+function prT() { return PR[lang] || PR.en; }
+function propShow(on) {
+  for (const id of ["dirC", "dirQ", "dirList"]) $(id).hidden = on;
+  $("propBtn").parentNode.hidden = on; $("propBox").hidden = !on;
+}
+$("propBtn").onclick = () => {
+  const t = prT(), cats = (DIR && DIR.categories) || [];
+  $("propBox").innerHTML = `<h3 style="margin:4px 0 0;font:16px Bungee,sans-serif">${esc(t.title)}</h3>
+    <label>${esc(t.who)}</label><div class="who"><label><input type="radio" name="pw" value="dueno">${esc(t.owner)}</label>
+      <label><input type="radio" name="pw" value="cliente" checked>${esc(t.client)}</label></div>
+    <label>${esc(t.cat)}<select id="p_cat"><option value="">—</option>${cats.map(c => `<option value="${esc(c.id)}"${c.id === dirCat ? " selected" : ""}>${esc(c.icon + " " + c.label)}</option>`).join("")}</select></label>
+    <label>${esc(t.nom)} *<input id="p_nom" maxlength="80" autocomplete="off"></label>
+    <label>${esc(t.zone)} *<input id="p_zone" maxlength="60" placeholder="${esc(t.zph)}"></label>
+    <label>${esc(t.que)} *<input id="p_que" maxlength="200" placeholder="${esc(t.qph)}"></label>
+    <label>${esc(t.wa)}<input id="p_wa" inputmode="tel" maxlength="25" placeholder="+507 6123-4567"></label>
+    <label>${esc(t.site)}<input id="p_site" maxlength="200"></label>
+    <label>${esc(t.me)}<input id="p_me" maxlength="120"></label>
+    <input class="hp" id="p_web" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="small">${esc(t.note)}</div>
+    <button type="button" class="send" id="p_send">${esc(t.send)}</button><div class="msg" id="p_msg" role="status"></div>
+    <button type="button" class="send" id="p_back" style="background:#fff;box-shadow:none">${esc(t.back)}</button>`;
+  propShow(true); $("p_nom").focus();
+  $("p_back").onclick = () => propShow(false);
+  $("p_send").onclick = async () => {
+    const body = {quien: (document.querySelector('input[name="pw"]:checked') || {}).value, cat: $("p_cat").value,
+      nom: $("p_nom").value, zone: $("p_zone").value, que: $("p_que").value, whatsapp: $("p_wa").value,
+      site: $("p_site").value, contacto: $("p_me").value, web: $("p_web").value, lang};
+    $("p_send").disabled = true;
+    try {
+      const r = await fetch(API + "/api/proponer", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) { $("p_msg").textContent = "✓ " + t.ok; $("p_send").hidden = true; }
+      else { $("p_msg").textContent = "⚠ " + (d.error || T.err); $("p_send").disabled = false; }
+    } catch (e) { $("p_msg").textContent = "⚠ " + T.err; $("p_send").disabled = false; }
+  };
 };
 const WA_SVG = document.querySelector("#waBtn svg").outerHTML;
 let DIR = null, dirCat = "";
@@ -340,22 +413,43 @@ function dirDraw() {
   box.innerHTML = "";
   for (const c of DIR.contacts || []) {
     if (dirCat && c.cat !== dirCat) continue;
-    if (q && ![c.title, c.name, c.zone, c.what].join(" ").toLowerCase().includes(q)) continue;
-    const go = `${API}/go/${encodeURIComponent(c.id)}?l=${lang}&f=annuaire&s=${encodeURIComponent(session || "")}`;
+    if (q && ![c.title, c.name, c.zone, c.what, c.why].join(" ").toLowerCase().includes(q)) continue;
+    const go = goLink(c, "annuaire");
     const r = document.createElement("div"); r.className = "crow";
     r.innerHTML = `<div class="ic">${esc(icon[c.cat] || "📍")}</div>
       <div class="tx"><b>${esc(c.title)}${c.partner ? `<span class="tag">${esc(t.partner)}</span>` : ""}</b>
-      <small>${esc(c.name)}${c.zone ? " · " + esc(c.zone) : ""}</small>${c.price ? `<small>💲 ${esc(c.price)}</small>` : ""}${c.hours ? `<small>🕘 ${esc(c.hours)}</small>` : ""}</div>
-      <a class="go" href="${esc(go)}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(c.name)}">${WA_SVG}</a>`;
+      <small>${esc(c.name)}${c.zone ? " · " + esc(c.zone) : ""}</small>${c.rating ? `<small>⭐ ${esc(c.rating)}</small>` : ""}${c.why ? `<small>${esc(c.why)}</small>` : ""}${c.price ? `<small>💲 ${esc(c.price)}</small>` : ""}${c.hours ? `<small>🕘 ${esc(c.hours)}</small>` : ""}</div>
+      <a class="go ${esc(c.via || "wa")}" href="${esc(go)}" target="_blank" rel="noopener" aria-label="${esc(c.name)}">${goIcon(c)}</a>`;
     box.appendChild(r);
   }
   if (!box.children.length) box.innerHTML = `<div class="none">${esc(t.none)}</div>`;
 }
 $("dirQ").oninput = () => DIR && dirDraw();
-$("waBtn").onclick = async () => {
+function goLink(c, from) { return `${API}/go/${encodeURIComponent(c.id)}?l=${lang}&f=${from}&s=${encodeURIComponent(session || "")}`; }
+function goIcon(c) { return c.via === "web" ? "🌐" : c.via === "map" ? "📍" : WA_SVG; }
+function recoRow(items) {            // une recommandation : un bouton par adresse (WhatsApp, site ou carte)
+  if (!items || !items.length) return;
+  const r = document.createElement("div"); r.className = "recos";
+  for (const c of items) {
+    const a = document.createElement("a"); a.href = goLink(c, "reco"); a.target = "_blank"; a.rel = "noopener";
+    a.className = c.via === "wa" ? "wa" : ""; a.innerHTML = `${goIcon(c)}<span>${esc(c.name)}</span>`;
+    r.appendChild(a);
+  }
+  $("chat").appendChild(r); scrollEnd();
+}
+function dirChip(items) {            // une réponse sur un sujet qui a des contacts : un raccourci vers eux
+  if (!items || !items.length || $("waBtn").style.display === "none") return;
+  const r = document.createElement("div"); r.className = "recos";
+  const b = document.createElement("button"); b.type = "button"; b.textContent = "📇 " + ctT().more;
+  b.onclick = () => openDir(items[0].cat);
+  r.appendChild(b); $("chat").appendChild(r); scrollEnd();
+}
+$("waBtn").onclick = () => openDir();
+async function openDir(cat) {
+  if (cat !== undefined) dirCat = cat;
   const t = ctT();
   $("dirT").textContent = t.title; $("dirN").textContent = t.note; $("dirQ").placeholder = t.search;
-  $("dirList").innerHTML = ""; $("dir").showModal();
+  $("dirList").innerHTML = ""; $("propBtn").textContent = prT().btn; propShow(false); $("dir").showModal();
   try {
     DIR = await (await fetch(`${API}/api/annuaire?lang=${lang}`)).json();
     if (dirCat && !(DIR.categories || []).some(c => c.id === dirCat)) dirCat = "";
@@ -368,7 +462,7 @@ let factIdx = Math.floor(Math.random() * 11);
 function waitHTML(extra) {
   const f = T.facts[factIdx % T.facts.length];
   return `<div class="road"><i>🚌</i></div><div class="fact"><b>${esc(T.know)}</b> ${esc(f)}</div>` +
-         (extra ? `<div class="qpos">${esc(extra)}</div>` : `<div class="qpos think">${esc(T.slow)}<i>.</i><i>.</i><i>.</i></div>`);
+         `<div class="qpos">${esc(extra || T.slow)}</div>`;
 }
 
 async function ask(text) {
@@ -377,7 +471,7 @@ async function ask(text) {
   $("chips").style.display = "none"; $("q").value = ""; $("send").disabled = true;
   bubble("u", esc(text));
   const w = bubble("b wait", waitHTML());
-  const factTimer = setInterval(() => { factIdx++; const q = w.querySelector(".qpos:not(.think)"); w.innerHTML = waitHTML(q && q.textContent); }, 9000);
+  const factTimer = setInterval(() => { factIdx++; const q = w.querySelector(".qpos"); w.innerHTML = waitHTML(q && q.textContent); }, 9000);
   try {
     const r = await fetch(API + "/api/ask", {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({question: text, session, hotel: HOTEL, lang})});
@@ -389,7 +483,9 @@ async function ask(text) {
       const j = await (await fetch(API + "/api/job/" + d.job)).json();
       if (j.status === "done" || j.status === "error") {
         clearInterval(factTimer); factIdx++;
-        w.className = "m b"; w.innerHTML = md(j.answer); photoRow(j.photos); feedbackRow(j.qa_id); break;
+        w.className = "m b"; w.innerHTML = md(j.answer); photoRow(j.photos);
+        if (j.reco) recoRow(j.contacts); else dirChip(j.contacts);
+        feedbackRow(j.qa_id); break;
       }
       if (j.status === "queued" && j.position > 1) { const q = w.querySelector(".qpos"); if (q) q.textContent = T.queue(j.position - 1); }
       else if (j.partial) { clearInterval(factTimer); w.className = "m b"; w.innerHTML = md(j.partial); }
